@@ -10,4 +10,4 @@ REDIS_DB = 0
 REDIS_PASSWORD = "zurl"
 
 [app]
-DENY_UA = [ "MicroMessenger", "QQ", "MQQBrowser",]
+DENY_UA = [ "MicroMessenger", "QQ", "MQQBrowser"]

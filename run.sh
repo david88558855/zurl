@@ -46,6 +46,7 @@ if [ -z "$ARG1" ]; then
 elif [ "$ARG1" = "dev" ]; then
     # exist_db
     echo "Running in development mode..."
+    source myenv/bin/activate
     # 执行数据库迁移
     alembic upgrade head
     uvicorn app.main:app --reload --host 0.0.0.0 --port 3080

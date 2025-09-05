@@ -1,5 +1,6 @@
 from fastapi import APIRouter,Form, Request, Depends, UploadFile, File
 from app.api.index import IndexAPI
+from app.api.option import OptionAPI
 from app.api.sys import SysAPI
 from app.api.user import UserAPI, UserItem
 from app.api.url import *
@@ -16,6 +17,7 @@ indexAPI = IndexAPI()
 userAPI = UserAPI()
 urlAPI = UrlAPI()
 sysAPI = SysAPI()
+optionAPI = OptionAPI()
 
 # 首页
 @router.get("/")
@@ -126,3 +128,18 @@ async def change_token(request: Request, session = Depends(get_current_session))
 @router.get("/api/user/get_token")
 async def get_token(request:Request,session = Depends(get_current_session)):
     return await userAPI.get_token(request=request)
+
+# 获取选项配置
+@router.get("/api/option/get")
+async def get_option(key: str, session = Depends(get_current_session)):
+    return await optionAPI.get_option(key=key)
+
+# 设置配置选项
+@router.post("/api/option/set")
+async def set_option(key: str = Form(...), value: str = Form(...), session = Depends(get_current_session)):
+    return await optionAPI.set_option(key=key, value=value)
+
+# 获取站点信息，不需要认证
+@router.get("/api/option/get_site_info")
+async def get_site_info():
+    return await optionAPI.get_site_info()

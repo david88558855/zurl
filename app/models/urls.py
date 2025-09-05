@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String,text
 from sqlalchemy.orm import Session
 from .conn import Base,get_db  # 从同级conn模块导入Base
 
@@ -11,6 +11,7 @@ class Urls(Base):
     long_url = Column(String(2048), index=True)  # 长链接
     created_at = Column(Integer)  # 创建时间戳
     updated_at = Column(Integer)  # 更新时间戳
+    expires_at = Column(Integer, default=0, server_default=text("0"))  # 过期时间戳，0表示不过期
     is_active = Column(Integer, default=1)  # 是否激活，1为激活，0为未激活
     title = Column(String(256),index=True)  # 链接标题
     description = Column(String(512))  # 链接描述

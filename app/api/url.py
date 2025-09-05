@@ -23,6 +23,7 @@ class UrlItem(BaseModel):
     long_url: str
     title: str = None
     description: str = None
+    ttl_days: int = 0  # 过期天数，0表示不过期
 
 class UrlSearchItem(BaseModel):
     filter: str
@@ -80,6 +81,11 @@ class UrlAPI:
                 "description": row.description,
             })
         
+        # 如果ttl_days不为0，则添加过期时间
+        expires_at = 0
+        if item.ttl_days and item.ttl_days > 0:
+            expires_at = current_time + item.ttl_days * 86400
+        
         # 创建新的Url对象
         url = Urls(
             short_url=item.short_url,
@@ -88,6 +94,7 @@ class UrlAPI:
             description=item.description,
             created_at=created_at,
             updated_at=updated_at,
+            expires_at=expires_at,
             ip=ip
         )
 
@@ -147,7 +154,7 @@ class UrlAPI:
     async def redirect(self, short_url: str, request: Request):
         # 禁止的UA
         result = await deny_uas(request)
-        print(f"deny_uas result: {result}")  # 调试输出
+        # print(f"deny_uas result: {result}")  # 调试输出
         if result:
             # 渲染403错误页面并直接返回，阻止后续执行
             return templates.TemplateResponse(
@@ -161,6 +168,14 @@ class UrlAPI:
         
         # 如果短链接不存在，返回404
         if not row:
+            return templates.TemplateResponse(
+                name="error_pages/404.html",
+                context={"request": request},
+                status_code=404
+            )
+        
+        # 如果设置了过期时间，且当前时间已经超过过期时间，返回404
+        if row.expires_at and row.expires_at > 0 and int(time.time()) > row.expires_at:
             return templates.TemplateResponse(
                 name="error_pages/404.html",
                 context={"request": request},

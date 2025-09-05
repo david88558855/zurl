@@ -5,7 +5,7 @@ from sqlalchemy import pool
 from app.models.sessions import Sessions
 from app.models.urls import Urls
 from app.models.conn import Base
-
+from app.models.options import Options
 from alembic import context
 
 

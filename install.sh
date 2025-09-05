@@ -22,6 +22,9 @@ clean(){
     apk del py3-pip
     rm -rf /var/cache/apk/*
     rm -rf /root/.cache
+    rm -rf /opt/zurl/.github
+    rm -rf /opt/zurl/.git
+    rm -rf /opt/zurl/frontend
 }
 
 install_deps && install_python_deps && clean
