@@ -6,11 +6,11 @@
             ref="formRef"
             :rules="rules"
         >
-            <el-form-item label="长链接" prop="long_url">
+            <el-form-item :label="$t('long.url')" prop="long_url">
                 <el-input @blur="getLinkInfo(formData.long_url)" v-model="formData.long_url"></el-input>
             </el-form-item>
 
-            <el-form-item label="自定义短链接">
+            <el-form-item :label="$t('custom.short.url')" prop="short_url">
                 <el-input
                 v-model="formData.short_url"
                 placeholder="short_url"
@@ -19,18 +19,18 @@
                 </el-input>
             </el-form-item>
 
-            <el-form-item label="标题">
+            <el-form-item :label="$t('title')" prop="title">
                 <el-input v-model="formData.title"></el-input>
             </el-form-item>
 
-            <el-form-item label="有效期(天)" v-if="props.utype === 'add'">
-                <el-input v-model="formData.ttl_days" type="number" placeholder="0代表永不过期" value="0"></el-input>
+            <el-form-item :label="$t('validity.period.days')" v-if="props.utype === 'add'">
+                <el-input v-model="formData.ttl_days" type="number" :placeholder="$t('validity.period.days.placeholder')"></el-input>
             </el-form-item>
 
             <el-form-item>
-                <el-button v-if="props.utype === 'add'" type="primary" @click="addLink">添加链接</el-button>
-                <el-button v-else-if="props.utype === 'edit'" type="primary" @click="updateLink">更新链接</el-button>
-                <el-button @click="resetForm">重置</el-button>
+                <el-button v-if="props.utype === 'add'" type="primary" @click="addLink">{{ $t('add.link') }}</el-button>
+                <el-button v-else-if="props.utype === 'edit'" type="primary" @click="updateLink">{{ $t('edit.link1') }}</el-button>
+                <el-button @click="resetForm">{{ $t('reset') }}</el-button>
             </el-form-item>
 
         </el-form>

@@ -3,9 +3,9 @@
     <!-- Token 使用说明 -->
     <Notice>
       <ul>
-        <li>您可以在此创建或修改Token</li>
-        <li>Token可用于调用Zurl API接口，请妥善保管，如果Token不慎泄露，请立即更换Token</li>
-        <li>更多接口请参考： <el-link href="/docs" target="_blank" type="primary" class="docs-link">/docs</el-link></li>
+        <li>{{ $t('token.create.tips.1') }}</li>
+        <li>{{ $t('token.create.tips.2') }}</li>
+        <li>{{ $t('token.create.tips.3') }} <el-link href="/docs" target="_blank" type="primary" class="docs-link">/docs</el-link></li>
       </ul>
     </Notice>
 
@@ -15,11 +15,11 @@
       <div v-if="!hasToken" class="no-token">
         <div class="empty-state">
           <el-icon class="empty-icon"><Key /></el-icon>
-          <h3 class="empty-title">暂未创建Token</h3>
-          <p class="empty-desc">创建Token后即可使用API接口</p>
+          <h3 class="empty-title">{{ $t('token.no.token.title') }}</h3>
+          <p class="empty-desc">{{ $t('token.no.token.desc') }}</p>
           <el-button type="primary" size="large" @click="createToken" :loading="loading.create" class="create-btn">
             <el-icon><Plus /></el-icon>
-            创建 Token
+            {{ $t('token.create') }}
           </el-button>
         </div>
       </div>
@@ -29,7 +29,7 @@
         <div class="token-display">
           <div class="token-label">
             <el-icon><Key /></el-icon>
-            <span>当前Token</span>
+            <span>{{ $t('token.current') }}</span>
           </div>
           <div class="token-input-wrapper">
             <el-input
@@ -39,19 +39,19 @@
               show-password
               class="token-input"
               size="large"
-              placeholder="您的Token将在这里显示"
+              :placeholder="$t('token.placeholder')"
             />
           </div>
         </div>
         
         <div class="token-actions">
           <el-button type="primary" @click="copyToken" size="large">
-            <el-icon><DocumentCopy /></el-icon>
-            复制 Token
+            <el-icon><DocumentCopy /></el-icon> 
+            {{ $t('token.copy') }}
           </el-button>
           <el-button type="warning" @click="changeToken" :loading="loading.change" size="large">
             <el-icon><Refresh /></el-icon>
-            更换 Token
+            {{ $t('token.change') }}
           </el-button>
         </div>
       </div>
@@ -63,14 +63,14 @@
     <div class="api-example-section">
       <div class="example-header">
         <el-icon class="example-icon"><Document /></el-icon>
-        <span class="example-title">API 使用示例</span>
+        <span class="example-title">{{ $t('token.api.example') }}</span>
       </div>
       <div class="example-content">
         <div class="example-card">
           <div class="example-card-header">
             <div class="header-left">
               <el-icon class="api-icon"><Link /></el-icon>
-              <span>生成短链接接口</span>
+              <span>{{ $t('token.api.create.short') }}</span>
             </div>
             <el-tag type="success" size="default">POST</el-tag>
           </div>
@@ -78,11 +78,11 @@
             <div class="code-header">
               <div class="code-info">
                 <span class="code-lang">cURL</span>
-                <span class="code-desc">命令行示例</span>
+                <span class="code-desc">{{ $t('token.api.curl.example') }}</span>
               </div>
               <el-button size="small" text @click="copyCode" class="copy-code-btn">
-                <el-icon><DocumentCopy /></el-icon>
-                复制代码
+                <el-icon><DocumentCopy /></el-icon> 
+                {{ $t('token.copy.code') }}
               </el-button>
             </div>
             <div class="code-content">
@@ -114,9 +114,11 @@ import {
 } from '@element-plus/icons-vue'
 import req from '@/utils/req'
 import { useBaseStore } from '@/stores/base'
+import { useI18n } from 'vue-i18n'
 import Notice from '../notice.vue'
 
 const baseStore = useBaseStore()
+const { t } = useI18n()
 const codeRef = ref(null)
 
 // 数据状态
@@ -138,11 +140,11 @@ const getToken = async () => {
       hasToken.value = false
       currentToken.value = ''
     } else {
-      ElMessage.error(res.data.msg || '获取Token失败')
+      ElMessage.error(t(res.data.msg) || t('token.get.fail'))
     }
   } catch (error) {
-    console.error('获取Token失败:', error)
-    ElMessage.error('获取Token失败')
+    //console.error('获取Token失败:', error)
+    ElMessage.error(t('token.get.fail'))
   }
 }
 
@@ -154,13 +156,13 @@ const createToken = async () => {
     if (res.data.code === 200) {
       hasToken.value = true
       currentToken.value = res.data.data.token
-      ElMessage.success('Token创建成功')
+      ElMessage.success(t('token.create.success'))
     } else {
-      ElMessage.error(res.data.msg || '创建Token失败')
+      ElMessage.error(t(res.data.msg) || t('token.create.fail'))
     }
   } catch (error) {
     console.error('创建Token失败:', error)
-    ElMessage.error('创建Token失败')
+    ElMessage.error(t('token.create.fail'))
   } finally {
     loading.value.create = false
   }
@@ -173,13 +175,13 @@ const changeToken = async () => {
     const res = await req.get('/api/user/change_token')
     if (res.data.code === 200) {
       currentToken.value = res.data.data.token
-      ElMessage.success('Token更换成功')
+      ElMessage.success(t('token.change.success'))
     } else {
-      ElMessage.error(res.data.msg || '更换Token失败')
+      ElMessage.error(t(res.data.msg) || t('token.change.fail'))
     }
   } catch (error) {
     console.error('更换Token失败:', error)
-    ElMessage.error('更换Token失败')
+    ElMessage.error(t('token.change.fail'))
   } finally {
     loading.value.change = false
   }

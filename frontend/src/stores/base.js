@@ -15,7 +15,7 @@ export const useBaseStore = defineStore('base',{
             input.select()
             document.execCommand("copy");
             input.remove();
-            ElMessage.success("复制成功");
+            ElMessage.success('Copied');
         },
 
 

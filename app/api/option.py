@@ -43,3 +43,4 @@ class OptionAPI:
                 return show_json(500, "Site info invalid JSON")
         # 如果已经是 dict/list 等结构，直接返回
         return show_json(200, "success", site_info)
+    

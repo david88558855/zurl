@@ -1,32 +1,35 @@
+
+[中文说明](README_zh.md) | **English**
+
 # Zurl
 
-Zurl 是一款简单且实用的短链接系统，可以快速生成短链接，方便分享和管理。Zurl 旨在提供一个轻量级的解决方案，帮助用户更好地管理和跟踪链接。
+Zurl is a simple and practical short URL system that can quickly generate short links for easy sharing and management. Zurl aims to provide a lightweight solution to help users better manage and track links.
 
 ![970c82f82f62fe5c.png](https://img.rss.ink/imgs/2025/08/04/970c82f82f62fe5c.png)
 
 ![c57c3cce4618acd3.png](https://img.rss.ink/imgs/2025/08/04/c57c3cce4618acd3.png)
 
-## 功能特点
+## Features
 
-* [x] **短链接生成**：用户可以将长链接转换为短链接，便于分享和传播。
-* [x] **链接管理**：提供直观的界面，管理员可以查看、编辑和删除。
-* [x] **延迟计数**：系统会延迟记录每个短链接的点击次数，避免高并发时压力过大。
-* [x] **自动获取标题**：添加链接时，系统会尝试自动获取长链接的标题，方便后续识别。
-* [x] **支持UA屏蔽**：管理员可以自定义需要屏蔽的User-Agent，防止恶意访问。
-* [x] **数据迁移**：支持将YOURLS数据迁移到Zurl，帮助用户过渡。
-* [x] **API**：提供API接口，方便二次开发和集成到任意系统。
-* [x] 支持设置短链有效期。
-* [x] 自定义站点信息
-* [x] API Token管理
-* [ ] 高级分析
-* [ ] 中英文双语支持
-* [ ] 登录会话管理
+* [x] **Short Link Generation**: Users can convert long URLs into short links for easy sharing and distribution.
+* [x] **Link Management**: Provides an intuitive interface where administrators can view, edit, and delete links.
+* [x] **Delayed Counting**: The system delays recording click counts for each short link to avoid excessive pressure during high concurrency.
+* [x] **Automatic Title Retrieval**: When adding links, the system attempts to automatically retrieve the title of the long URL for easy identification.
+* [x] **UA Blocking Support**: Administrators can customize User-Agents to block, preventing malicious access.
+* [x] **Data Migration**: Supports migrating YOURLS data to Zurl, helping users transition.
+* [x] **API**: Provides API interfaces for secondary development and integration into any system.
+* [x] Support for setting short link expiration dates.
+* [x] Custom site information
+* [x] API Token management
+* [x] Bilingual support (Chinese and English)
+* [ ] Advanced analytics
+* [ ] Login session management
 
-## 安装Zurl
+## Installing Zurl
 
-> 目前仅支持Docker安装，请确保您已经安装Docker和Docker Compose
+> Currently only Docker installation is supported. Please ensure you have Docker and Docker Compose installed.
 
-新建`docker-compose.yaml`文件，内容如下：
+Create a new `docker-compose.yaml` file with the following content:
 
 ```yaml
 version: '3.8'
@@ -42,56 +45,56 @@ services:
       - ./data:/opt/zurl/app/data
 ```
 
-输入`docker-compose up -d`启动，然后访问`http://IP:3080` 根据提示完成初始化！
+Run `docker-compose up -d` to start, then visit `http://IP:3080` and follow the prompts to complete initialization!
 
-**升级**
+**Upgrade**
 
-1. 备份当前挂载目录的数据
-2. 停止并删除当前容器：`docker-compose down`
-3. 拉取最新镜像：`docker-compose pull`
-4. 重新创建并启动容器：`docker-compose up -d`
+1. Backup the data in the current mounted directory
+2. Stop and remove the current container: `docker-compose down`
+3. Pull the latest image: `docker-compose pull`
+4. Recreate and start the container: `docker-compose up -d`
 
-> 注意：升级前请务必备份数据，升级造成的数据风险由您自行承担！
+> Note: Please be sure to backup your data before upgrading. You are responsible for any data risks caused by upgrades!
 
-## 设置
+## Configuration
 
-**UA屏蔽**
+**UA Blocking**
 
-可以在挂载目录下找到`config.toml`中的`app.DENY_UA`添加需要屏蔽的User-Agent，默认屏蔽：
+You can find `config.toml` in the mounted directory and add User-Agents to block in `app.DENY_UA`. Default blocks:
 
-* *信
-* *Q
+* *WeChat
+* *QQ
 
-> 注意：修改配置后需要重启容器！
+> Note: You need to restart the container after modifying the configuration!
 
-**重置密码**
+**Reset Password**
 
-如果您忘记了管理员账号或密码，可以删除挂载目录下的`config.toml`文件，然后重启容器并重新访问Zurl完成初始化即可。（此操作不影响数据）
+If you forget your administrator account or password, you can delete the `config.toml` file in the mounted directory, then restart the container and revisit Zurl to complete initialization. (This operation does not affect data)
 
-> 切勿删除挂载目录下的`db`目录，否则会导致链接数据丢失。
+> Do not delete the `db` directory in the mounted directory, as this will cause link data loss.
 
-## 演示
+## Demo
 
-* 演示站点：[https://zurl.demo.mba](https://zurl.demo.mba)
-* 用户名：`xiaoz`
-* 密码：`blog.xiaoz.org`
+* Demo site: [https://zurl.demo.mba](https://zurl.demo.mba)
+* Username: `xiaoz`
+* Password: `blog.xiaoz.org`
 
-## 问题反馈
+## Issue Feedback
 
-* 如果有任何问题可以在[Issues](https://github.com/helloxz/zurl/issues) 中提交。
-* 或者添加我的微信：`xiaozme`，请务必备注Zurl
+* If you have any issues, you can submit them in [Issues](https://github.com/helloxz/zurl/issues).
+* Or add my WeChat: `xiaozme`, please be sure to note Zurl
 
-## 技术栈
+## Tech Stack
 
-* 后端：Python3 + FastAPI
-* 前端：Vue3 + Element Plus
-* 数据库：SQLite3
-* 缓存：Redis
+* Backend: Python3 + FastAPI
+* Frontend: Vue3 + Element Plus
+* Database: SQLite3
+* Cache: Redis
 
-## 其他产品
+## Other Products
 
-如果您有兴趣，还可以了解我们的其他产品。
+If you're interested, you can also learn about our other products.
 
-* [Zdir](https://www.zdir.pro/zh/) - 一款轻量级、多功能的文件分享程序。
-* [OneNav](https://www.onenav.top/) - 高效的浏览器书签管理工具，将您的书签集中式管理。
-* [ImgURL](https://www.imgurl.org/) - 2017年上线的免费图床。
+* [Zdir](https://www.zdir.pro/zh/) - A lightweight, multi-functional file sharing program.
+* [OneNav](https://www.onenav.top/) - An efficient browser bookmark management tool for centralized bookmark management.
+* [ImgURL](https://www.imgurl.org/) - A free image hosting service launched in 2017.

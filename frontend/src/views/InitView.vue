@@ -1,52 +1,52 @@
 <template>
   <div class="init">
     <div class="initForm">
-      <h2 class="init-title">系统初始化</h2>
-      <p class="init-subtitle">创建管理员账户以开始使用</p>
+      <h2 class="init-title">{{ $t('system.init') }}</h2>
+      <p class="init-subtitle">{{ $t('create.admin.account') }}</p>
       
       <div class="form-content">
         <div class="input-group">
-          <label class="input-label">用户名</label>
+          <label class="input-label">{{ $t('username') }}</label>
           <el-input 
             class="init-input" 
             type="text" 
-            placeholder="请输入您的用户名" 
+            :placeholder="$t('init.username.placeholder')" 
             v-model="userForm.username"
             size="large"
           />
         </div>
         
         <div class="input-group">
-          <label class="input-label">邮箱</label>
+          <label class="input-label">{{ $t('email') }}</label>
           <el-input 
             class="init-input" 
             type="text" 
-            placeholder="请输入您的邮箱" 
+            :placeholder="$t('init.email.placeholder')" 
             v-model="userForm.email"
             size="large"
           />
         </div>
         
         <div class="input-group">
-          <label class="input-label">密码</label>
+          <label class="input-label">{{ $t('password') }}</label>
           <el-input 
             show-password 
             class="init-input" 
             type="password" 
-            placeholder="设置登录密码"
+            :placeholder="$t('init.password.placeholder')"
             v-model="userForm.password"
             size="large"
           />
         </div>
         
         <div class="input-group">
-          <label class="input-label">重复密码</label>
+          <label class="input-label">{{ $t('repeat.password') }}</label>
           <el-input 
             @keyup.enter="init" 
             show-password 
             class="init-input" 
             type="password" 
-            placeholder="重复登录密码"
+            :placeholder="$t('init.repeat.password.placeholder')"
             v-model="userForm.repeat_password"
             size="large"
           />
@@ -59,7 +59,7 @@
             type="primary"
             size="large"
           >
-            初始化系统
+            {{ $t('init.system') }}
           </el-button>
         </div>
         
@@ -76,7 +76,9 @@ import {ref,onMounted} from 'vue'
 import {useRouter} from 'vue-router'
 import req from '@/utils/req';
 import { ElMessage } from 'element-plus';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const router = useRouter()
 const userForm = ref({
   username: '',
@@ -88,27 +90,27 @@ const userForm = ref({
 const init = () => {
   // 用户名不能为空
   if (!userForm.value.username) {
-    return ElMessage.error('用户名不能为空！');
+    return ElMessage.error(t('username.required'));
   }
   // 要求用户名必须是小写
   if (!/^[a-z0-9]+$/.test(userForm.value.username)) {
-    return ElMessage.error('用户名只能包含小写字母或数字！');
+    return ElMessage.error(t('username.lowercase.only'));
   }
 
   // 邮箱不能为空，且必须是正确的邮箱格式
   if (!userForm.value.email || !/\S+@\S+\.\S+/.test(userForm.value.email)) {
-    return ElMessage.error('请填写正确的邮箱！');
+    return ElMessage.error(t('email.required'));
   }
 
   // 密码不能为空
   if (!userForm.value.password) {
-    return ElMessage.error('密码不能为空');
+    return ElMessage.error(t('password.required'));
   }
 
   // 判断用户输入的密码是否一致
   if (userForm.value.password !== userForm.value.repeat_password) {
     
-    return ElMessage.error('两次输入的密码不一致');
+    return ElMessage.error(t('password.mismatch'));
   }
 
   const formData = {
@@ -120,19 +122,19 @@ const init = () => {
   // 继续请求后端
   req.post('/api/user/init', formData).then(res => {
     if (res.data.code === 200) {
-      ElMessage.success('初始化成功');
+      ElMessage.success(t('init.success'));
       // 2s后跳转
       setTimeout(() => {
         router.push('/login');
       }, 2000);
       // router.push('/login');
     } else {
-      ElMessage.error(res.data.msg);
+      ElMessage.error(t(res.data.msg));
     }
   })
   .catch(err => {
     console.error(err);
-    ElMessage.error('初始化失败，请稍后再试');
+    ElMessage.error(t('init.failed'));
   });
 }
 </script>

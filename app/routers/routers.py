@@ -143,3 +143,8 @@ async def set_option(key: str = Form(...), value: str = Form(...), session = Dep
 @router.get("/api/option/get_site_info")
 async def get_site_info():
     return await optionAPI.get_site_info()
+
+# 修改密码
+@router.post("/api/user/change_password")
+async def change_password(old_password: str = Form(...), new_password: str = Form(...), session = Depends(get_current_session)):
+    return userAPI.change_password(old_password=old_password, new_password=new_password)

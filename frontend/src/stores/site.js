@@ -8,6 +8,7 @@ export const useSiteStore = defineStore('site',{
         email:"",
         username:"",
         is_login:false,
+        language: "en", // 当前语言
         site_info:{
             title:"",
             description:"",
@@ -99,7 +100,16 @@ export const useSiteStore = defineStore('site',{
                     }
                 }
             })
+        },
+        // 切换语言
+        switchLanguage(lang) {
+            if (lang && (lang === 'zh' || lang === 'en')) {
+                this.language = lang;
+                // 保存到 localStorage
+                localStorage.setItem('user_language', lang);
+                // 刷新页面以应用新语言
+                window.location.reload();
+            }
         }
-
     }
 })

@@ -51,7 +51,7 @@ class UrlAPI:
         long_url = item.long_url.strip()
         # 正则验证是否是http://或https://开头的URL
         if not re.match(r"^(http://|https://)", long_url):
-            return show_json(400, "不正确的链接！", {})
+            return show_json(400, "error.link", {})
 
         # 如果短链接是空的
         if not item.short_url:
@@ -60,10 +60,10 @@ class UrlAPI:
             item.short_url = item.short_url.strip().lower()
             # 正则验证short_url是否合法，只能是小写字母或数字或中横线、下划线组合，不超过32位
             if not re.match(r"^[a-z0-9_-]{1,32}$", item.short_url):
-                return show_json(400, "短链接不合法！", {})
+                return show_json(400, "invalid.short.url", {})
             # 检查短链接是否在限制列表中
             if item.short_url in DENY_SHORT_URLS:
-                return show_json(400, f"短链接：{item.short_url} 是系统保留的，请更换！", {})
+                return show_json(400, "reserved.short.url", {})
 
         # 如果标题是空的，则使用长链接剔除协议和路径作为标题
         # if not item.title:
@@ -206,7 +206,7 @@ class UrlAPI:
             # 获取需要的数据
             datas = json_data[2:][0]["data"]
         except (json.JSONDecodeError, IndexError, KeyError, TypeError) as e:
-            return show_json(400, f"JSON格式不支持或数据结构不正确！", {})
+            return show_json(400, "json.error", {})
         
         # 获取datas的行数
         count = len(datas)
@@ -287,7 +287,7 @@ class UrlAPI:
         """
         # 如果URL是空的，直接返回空的标题和描述
         if not url:
-            return show_json(400, "URL不能为空", {"title": "", "description": ""})
+            return show_json(400, "url.not.empty", {"title": "", "description": ""})
         
         data = await self.get_url_info(url)
         return show_json(200, "success", data)
@@ -384,7 +384,7 @@ class UrlAPI:
         
         # 检查short_url是否已存在
         if item.short_url != url.short_url and Urls.check_short_url_exists(db, item.short_url):
-            return show_json(400, f"短链接：{item.short_url} 已存在！", {})
+            return show_json(400, f"ShortURL {item.short_url} Already exists", {})
         
         # 更新长链接、标题和描述
         url.long_url = item.long_url
@@ -423,7 +423,7 @@ class UrlAPI:
         urls = query.limit(30).all()
 
         if not urls:
-            return show_json(404, "没有查询到任何匹配！", {})
+            return show_json(404, "no.query", {})
         
         return show_json(200, "success", {
             "total": len(urls),

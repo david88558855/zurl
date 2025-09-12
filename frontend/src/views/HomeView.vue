@@ -5,14 +5,14 @@
       <div class="nav-content">
         <h1 class="logo">{{ siteInfo.title }}</h1>
         <div class="nav-links">
-          <a href="https://github.com/helloxz/zurl" title="前往Github查看" target="_blank" class="github-link">
+          <a href="https://github.com/helloxz/zurl" :title="$t('go.to.github')" target="_blank" class="github-link">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
             GitHub
           </a>
-          <router-link to="/login" v-if="!siteStore.is_login" class="login-btn">登录</router-link>
-          <router-link to="/admin" v-if="siteStore.is_login" class="login-btn">管理</router-link>
+          <router-link to="/login" v-if="!siteStore.is_login" class="login-btn">{{ $t('login') }}</router-link>
+          <router-link to="/admin" v-if="siteStore.is_login" class="login-btn">{{ $t('admin') }}</router-link>
         </div>
       </div>
     </nav>
@@ -20,9 +20,9 @@
     <!-- 主内容 -->
     <main class="main-content">
       <div class="hero-section">
-        <h2 class="hero-title">快速缩短您的链接</h2>
-        <p class="hero-subtitle">将长链接转换为简洁易分享的短链接</p>
-        
+        <h2 class="hero-title">{{ $t('quickly.shorten.your.link') }}</h2>
+        <p class="hero-subtitle">{{ $t('quickly.shorten.your.link.subtitle') }}</p>
+
         <!-- 表单 -->
         <div class="form-container">
           <el-form 
@@ -34,7 +34,7 @@
             <el-form-item prop="long_url" class="url-input-item">
               <el-input
                 v-model="formData.long_url"
-                placeholder="请输入要缩短的链接..."
+                :placeholder="$t('home.long_url.placeholder')"
                 class="url-input"
                 size="large"
               />
@@ -47,7 +47,7 @@
                   <span class="domain-label">{{ getMainDomain() }}/</span>
                   <el-input
                     v-model="formData.short_url"
-                    placeholder="自定义短链接（可选）"
+                    :placeholder="$t('home.custom_short_url.placeholder')"
                     class="custom-input"
                     size="large"
                   />
@@ -63,14 +63,14 @@
                 size="large"
                 :loading="loading"
               >
-                {{ loading ? '生成中...' : '生成短链接' }}
+                {{ loading ? $t('creating') : $t('create.short_url') }}
               </el-button>
               <el-button 
                 type="text" 
                 @click="showAdvanced = !showAdvanced"
                 class="advanced-toggle"
               >
-                {{ showAdvanced ? '隐藏' : '高级选项' }}
+                {{ showAdvanced ? $t('hide') : $t('advanced.options') }}
               </el-button>
             </div>
           </el-form>
@@ -78,7 +78,7 @@
           <!-- 结果展示 -->
           <div v-if="result" class="result-container">
             <div class="result-item">
-              <label>短链接：</label>
+              <label>{{ $t('home.short_url.label') }}</label>
               <div class="result-value">
                 <span class="short-url">{{ getShortUrl(result.short_url) }}</span>
                 <el-button 
@@ -86,12 +86,12 @@
                   @click="baseStore.copyText(getShortUrl(result.short_url))"
                   class="copy-btn"
                 >
-                  复制
+                  {{ $t('copy') }}
                 </el-button>
               </div>
             </div>
             <div class="result-item">
-              <label>原链接：</label>
+              <label>{{ $t('original.url.label') }}</label>
               <div class="result-value">
                 <span class="long-url">{{ result.long_url }}</span>
               </div>
@@ -114,6 +114,9 @@ import req from '@/utils/req'
 import { ElMessage } from 'element-plus'
 import { useSiteStore } from '@/stores/site'
 import { useBaseStore } from '@/stores/base'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const formRef = ref(null)
 const loading = ref(false)
@@ -171,8 +174,8 @@ const formData = ref({
 
 const rules = {
   long_url: [
-    { required: true, message: '请输入要缩短的链接', trigger: 'blur' },
-    { type: 'url', message: '请输入有效的URL', trigger: 'blur' }
+    { required: true, message: t('home.long_url.required'), trigger: 'blur' },
+    { type: 'url', message: t('home.long_url.url'), trigger: 'blur' }
   ]
 }
 

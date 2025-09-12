@@ -17,7 +17,7 @@
                     >
                         <el-menu-item @click="router.push('/admin/list')" index="list">
                             <el-icon><Link /></el-icon>
-                            <span>链接列表</span>
+                            <span>{{ $t('link.list') }}</span>
                         </el-menu-item>
 
                         <!-- <el-menu-item index="embedding">
@@ -34,12 +34,12 @@
 
                         <el-menu-item @click="router.push('/admin/migration')" index="migration">
                             <el-icon><DArrowRight /></el-icon>
-                            <span>数据迁移</span>
+                            <span>{{ $t('data.move') }}</span>
                         </el-menu-item>
 
                         <el-menu-item @click="router.push('/admin/setting')" index="setting">
                             <el-icon><Setting /></el-icon>
-                            <span>站点设置</span>
+                            <span>{{ $t('site.settings') }}</span>
                         </el-menu-item>
 
                         <el-menu-item @click="router.push('/admin/token')" index="token">
@@ -48,9 +48,9 @@
                         </el-menu-item>
 
 
-                        <el-menu-item @click="router.push('/admin/about')" index="about">
+                        <el-menu-item v-if="locale === 'zh'" @click="router.push('/admin/about')" index="about">
                             <el-icon><User /></el-icon>
-                            <span>关于我们</span>
+                            <span>{{ $t('about.us') }}</span>
                         </el-menu-item>
 
                     </el-menu>
@@ -69,10 +69,10 @@
                         <div class="l-header">
                             <div class="menu">
                                 <div class="item">
-                                    <el-link href="/">首页</el-link>
+                                    <el-link href="/">{{ $t('home') }}</el-link>
                                 </div>
                                 <div class="item">
-                                    <el-link href="https://github.com/helloxz/zurl" target="_blank">帮助文档</el-link>
+                                    <el-link href="https://github.com/helloxz/zurl" target="_blank">{{ $t('help.document') }}</el-link>
                                 </div>
 
                                 <div class="item">
@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div class="item">
-                                    <el-link href="https://github.com/helloxz/zurl" title="前往Github查看" target="_blank">Github</el-link>
+                                    <el-link href="https://github.com/helloxz/zurl" :title="$t('go.to.github')" target="_blank">Github</el-link>
                                 </div>
                             </div>
                         </div>
@@ -89,6 +89,20 @@
                             <!-- 显示邮箱 -->
                             <!-- <el-text class="mx-1 email">{{ siteStore.username }}</el-text> -->
                             <!-- 显示邮箱END -->
+                            
+                            <!-- 语言切换按钮 -->
+                            <div class="language-switch" @click="toggleLanguage" :title="getLanguageSwitchTitle()">
+                                <svg class="language-icon" width="18" height="18" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M28.2857 37H39.7143M42 42L39.7143 37L42 42ZM26 42L28.2857 37L26 42ZM28.2857 37L34 24L39.7143 37H28.2857Z" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M16 6L17 9" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M6 11H28" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10 16C10 16 11.7895 22.2609 16.2632 25.7391C20.7368 29.2174 28 32 28 32" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M24 11C24 11 22.2105 19.2174 17.7368 23.7826C13.2632 28.3478 6 32 6 32" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span class="language-text">{{ getTargetLanguageText() }}</span>
+                            </div>
+                            <!-- 语言切换按钮END -->
+                            
                             <!-- 头像部分 -->
                             <div class="avatar" style="cursor: pointer;">
                                 <el-dropdown placement="bottom-end">
@@ -109,8 +123,8 @@
                                         </div>
 
                                         <el-dropdown-menu>
-                                            <el-dropdown-item @click="logout">退出</el-dropdown-item>
-                                        
+                                            <el-dropdown-item @click="showChangePasswordDialog">{{ $t('user.change.password', '修改密码') }}</el-dropdown-item>
+                                            <el-dropdown-item @click="logout">{{ $t('user.logout') }}</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </template>
                                 </el-dropdown>
@@ -138,6 +152,59 @@
             </el-container>
             </el-container>
         </div>
+
+        <!-- 修改密码弹窗 -->
+        <el-dialog 
+            v-model="changePasswordDialogVisible" 
+            :title="$t('user.change.password', '修改密码')"
+            width="400px"
+            :before-close="handleClosePasswordDialog"
+        >
+            <el-form 
+                ref="changePasswordFormRef" 
+                :model="changePasswordForm" 
+                :rules="changePasswordRules"
+                label-width="100px"
+                label-position="top"
+            >
+                <el-form-item :label="$t('user.old.password', '旧密码')" prop="oldPassword">
+                    <el-input 
+                        v-model="changePasswordForm.oldPassword" 
+                        type="password" 
+                        show-password
+                        :placeholder="$t('user.enter.old.password', '请输入旧密码')"
+                    />
+                </el-form-item>
+                <el-form-item :label="$t('user.new.password', '新密码')" prop="newPassword">
+                    <el-input 
+                        v-model="changePasswordForm.newPassword" 
+                        type="password" 
+                        show-password
+                        :placeholder="$t('user.enter.new.password', '请输入新密码')"
+                    />
+                </el-form-item>
+                <el-form-item :label="$t('user.confirm.password', '确认密码')" prop="confirmPassword">
+                    <el-input 
+                        v-model="changePasswordForm.confirmPassword" 
+                        type="password" 
+                        show-password
+                        :placeholder="$t('user.confirm.new.password', '请确认新密码')"
+                    />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="changePasswordDialogVisible = false">{{ $t('cancel', '取消') }}</el-button>
+                    <el-button 
+                        type="primary" 
+                        @click="handleChangePassword"
+                        :loading="changePasswordLoading"
+                    >
+                        {{ $t('confirm', '确定') }}
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -163,6 +230,9 @@ import md5 from 'md5';
 import Github from '@/assets/github.svg'
 import { ElMessage } from 'element-plus';
 import req from '@/utils/req';
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const currentIndex = ref("list")
 // 根据路由获取的名称来改变组件
@@ -234,7 +304,7 @@ const isLogin = ()=>{
         if (err.response) {
             if (err.response.status === 401) {
                 // 提示错误
-                ElMessage.error("请先登录！")
+                ElMessage.error(t('no.login.msg'))
                 router.push("/login")
             }
         }
@@ -263,7 +333,116 @@ router.afterEach((to, from) => {
     changeTab()
 })
 
+// 处理语言切换
+const toggleLanguage = () => {
+    const currentLang = localStorage.getItem('user_language') || 'en'
+    const newLang = currentLang === 'zh' ? 'en' : 'zh'
+    siteStore.switchLanguage(newLang)
+}
+
+// 获取目标语言文本（要切换到的语言）
+const getTargetLanguageText = () => {
+    const currentLang = localStorage.getItem('user_language') || 'en'
+    return currentLang === 'zh' ? 'English' : '中文'
+}
+
+// 获取语言切换的title提示
+const getLanguageSwitchTitle = () => {
+    const currentLang = localStorage.getItem('user_language') || 'en'
+    return currentLang === 'zh' ? 'Switch to English' : 'Switch to Chinese'
+}
+
 const email = ref(sessionStorage.getItem("email"))
+
+// 修改密码相关
+const changePasswordDialogVisible = ref(false)
+const changePasswordFormRef = ref()
+const changePasswordLoading = ref(false)
+const changePasswordForm = ref({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+})
+
+// 修改密码表单验证规则
+const changePasswordRules = ref({
+    oldPassword: [
+        { required: true, message: t('user.enter.old.password', '请输入旧密码'), trigger: 'blur' }
+    ],
+    newPassword: [
+        { required: true, message: t('user.enter.new.password', '请输入新密码'), trigger: 'blur' },
+        { min: 6, message: t('user.password.min.length', '密码长度至少6位'), trigger: 'blur' }
+    ],
+    confirmPassword: [
+        { required: true, message: t('user.confirm.new.password', '请确认新密码'), trigger: 'blur' },
+        {
+            validator: (rule, value, callback) => {
+                if (value !== changePasswordForm.value.newPassword) {
+                    callback(new Error(t('user.password.not.match', '两次密码输入不一致')))
+                } else {
+                    callback()
+                }
+            },
+            trigger: 'blur'
+        }
+    ]
+})
+
+// 显示修改密码对话框
+const showChangePasswordDialog = () => {
+    changePasswordDialogVisible.value = true
+    // 重置表单
+    changePasswordForm.value = {
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+    }
+}
+
+// 关闭修改密码对话框
+const handleClosePasswordDialog = () => {
+    changePasswordDialogVisible.value = false
+    if (changePasswordFormRef.value) {
+        changePasswordFormRef.value.resetFields()
+    }
+}
+
+// 处理修改密码
+const handleChangePassword = async () => {
+    if (!changePasswordFormRef.value) return
+    
+    try {
+        await changePasswordFormRef.value.validate()
+        changePasswordLoading.value = true
+        
+        const formData = new FormData()
+        formData.append('old_password', changePasswordForm.value.oldPassword)
+        formData.append('new_password', changePasswordForm.value.newPassword)
+        
+        const response = await req.post('/api/user/change_password', formData)
+        
+        if (response.data.code === 200) {
+            ElMessage.success(t('success'))
+            changePasswordDialogVisible.value = false
+            
+            // 2秒后自动退出登录
+            setTimeout(() => {
+                logout()
+            }, 2000)
+        } else {
+            ElMessage.error(t(response.data.msg) || t('user.password.change.failed', '密码修改失败'))
+        }
+    } catch (error) {
+        // console.error('修改密码失败:', error)
+        if (error.response && error.response.data && error.response.data.msg) {
+            ElMessage.error(t(error.response.data.msg))
+        } else {
+            ElMessage.error(t('user.password.change.failed', '密码修改失败'))
+        }
+    } finally {
+        changePasswordLoading.value = false
+    }
+}
 </script>
 
 <style scoped>
@@ -473,5 +652,37 @@ const email = ref(sessionStorage.getItem("email"))
 
 .info-item span {
     font-weight: 500;
+}
+
+/* 语言切换按钮样式 */
+.language-switch {
+    display: flex;
+    align-items: center;
+    margin-right: 16px;
+    padding: 8px 12px;
+    background: rgba(124, 58, 237, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.language-switch:hover {
+    background: rgba(124, 58, 237, 0.15);
+    border-color: rgba(124, 58, 237, 0.3);
+    transform: translateY(-1px);
+}
+
+.language-icon {
+    color: #7C3AED;
+    flex-shrink: 0;
+}
+
+.language-text {
+    margin-left: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #7C3AED;
+    line-height: 1;
 }
 </style>

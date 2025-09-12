@@ -25,15 +25,15 @@ class UserAPI:
 
         # 如果其中一个不为空，则视为已经初始化过了
         if env_username or env_password:
-            return show_json(400, "请勿重复初始化！")
+            return show_json(400, "no.repeat.init")
 
         # 正则限制用户名只能是字母或数字组合，且长度大于3
         if not re.match(r"^[a-z0-9]{3,}$", username):
-            return show_json(400, "用户名只能是字母或数字组合，且长度大于3")
+            return show_json(400, "user.name.invalid")
         # 正则限制密码只能是字母或数字或部分特殊字符，且长度大于6
         if not re.match(r"^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;\"'<>,.?/\\-]{6,}$", passwort):
-            return show_json(400, "密码只能是字母或数字或部分特殊字符，且长度大于6")
-        
+            return show_json(400, "password.not.allow")
+
         # 加密后的密码
         en_password = md5(username + passwort)
         
@@ -48,6 +48,40 @@ class UserAPI:
             "username": username,
             "email": item.email
         })
+    
+    # 修改密码
+    def change_password(self,old_password: str = Form(...), new_password: str = Form(...)):
+        # 获取配置文件中的用户名和密码
+        env_username = get_config()["user"]["USERNAME"]
+        env_password = get_config()["user"]["PASSWORD"]
+
+        # 如果旧密码是空的
+        if not old_password:
+            return show_json(400, "oldpass.notallow.empty")
+        
+        # 如果新密码是空的
+        if not new_password:
+            return show_json(400, "newpass.notallow.empty")
+        
+        # 加密旧密码
+        md5_old_password = md5(env_username + old_password)
+
+        # 判断旧密码是否正确
+        if env_password != md5_old_password:
+            return show_json(400, "oldpass.error")
+        
+        # 正则限制新密码只能是字母或数字或部分特殊字符，且长度大于6
+        if not re.match(r"^[a-zA-Z0-9!@#$%^&*()_+={}\[\]:;\"'<>,.?/\\-]{6,}$", new_password):
+            return show_json(400, "password.not.allow")
+        
+        # 加密新密码
+        md5_new_password = md5(env_username + new_password)
+
+        # 更新配置文件中的密码
+        get_config()["user"]["PASSWORD"] = md5_new_password
+        save_config()
+        
+        return show_json(200, "success")
 
     # 用户登录
     def login(self,username: str, password: str,request: Request):
@@ -57,18 +91,18 @@ class UserAPI:
 
         # 如果用户名不正确
         if username != env_username:
-            return show_json(400, "用户名错误")
+            return show_json(400, "username.error")
         
         # 如果密码是空的
         if not password:
-            return show_json(400, "密码不能为空")
+            return show_json(400, "password.not.allow.empty")
         
         # 加密密码
         md5_password = md5(username + password)
 
         # 判断密码是否正确
         if env_password != md5_password:
-            return show_json(400, "密码错误")
+            return show_json(400, "password.error")
         
         # 登录成功
         token = "web-" + random_string(28)
@@ -97,7 +131,7 @@ class UserAPI:
         db.commit()
         db.refresh(session)
         # 返回登录成功信息
-        return show_json(200, "登录成功", {
+        return show_json(200, "success", {
             "token": session.token,
             "expires_at": session.expires_at,
             "username": session.username,
@@ -114,11 +148,11 @@ class UserAPI:
         # 获取请求头中的 token
         auth_header = request.headers.get("Authorization")
         if not auth_header:
-            return show_json(400, "未提供登录令牌")
+            return show_json(400, "no.session.token")
         
         # 提取 token 部分
         if not auth_header.startswith("Bearer "):
-            return show_json(400, "无效的登录令牌格式")
+            return show_json(400, "invalid.session.token")
         
         token = auth_header.split(" ")[1]
         
@@ -126,7 +160,7 @@ class UserAPI:
         db = next(get_db())
         session = db.query(Sessions).filter(Sessions.token == token).first()
         if not session:
-            return show_json(400, "无效的登录令牌")
+            return show_json(400, "session.expired")
         
         db.delete(session)
         db.commit()
@@ -155,7 +189,7 @@ class UserAPI:
             db.delete(existing_session)
             db.commit()
             db.close()
-            return show_json(400, "Token已存在，请勿重复创建！")
+            return show_json(400, "token.already.exists")
         
         session = Sessions(
             username="system",
@@ -194,7 +228,7 @@ class UserAPI:
         ).first()
         if not existing_session:
             db.close()
-            return show_json(400, "Token不存在，请先创建！")
+            return show_json(400, "token.not.exist")
         
         # 更新现有记录
         existing_session.token = token
@@ -219,7 +253,7 @@ class UserAPI:
         ).first()
         db.close()
         if not session:
-            return show_json(404, "Token不存在，请先创建！")
+            return show_json(404, "token.not.exist")
         return show_json(200, "success", {
             "token": session.token,
             "expires_at": session.expires_at,

@@ -2,15 +2,15 @@
     <div class="migration">
         <Notice>
             <ul>
-                <li>支持YOURLS数据迁移到Zurl，具体做法如下</li>
-                <li>使用phpMyAdmin将yourls_url表导出为.json格式</li>
-                <li>然后在此处点击上传导出的json文件</li>
+                <li>{{ $t('migration.notice1') }}</li>
+                <li>{{ $t('migration.notice2') }}</li>
+                <li>{{ $t('migration.notice3') }}</li>
             </ul>
         </Notice>
 
         <div class="upload-section">
             <div class="upload-card">
-                <h3>数据导入</h3>
+                <h3>{{ $t('data.import') }}</h3>
                 <el-upload
                     ref="uploadRef"
                     class="upload-demo"
@@ -28,11 +28,11 @@
                 >
                     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
                     <div class="el-upload__text">
-                        将JSON文件拖到此处，或<em>点击选择文件</em>
+                        Drag a JSON file here, or <em>click to select</em>
                     </div>
                     <template #tip>
                         <div class="el-upload__tip">
-                            仅支持 yourls_url 表导出的JSON 格式文件，文件大小不超过 10MB
+                            {{ $t('migration.tips') }}
                         </div>
                     </template>
                 </el-upload>
@@ -48,10 +48,10 @@
 
                 <div class="btns">
                     <el-button type="primary" @click="handleUpload" :disabled="!selectedFile">
-                        开始导入
+                        {{ $t('start.import') }}
                     </el-button>
                     <el-button v-if="selectedFile" @click="clearFile">
-                        重新选择
+                        {{ $t('reselect') }}
                     </el-button>
                 </div>
             </div>
@@ -65,6 +65,9 @@ import { ElMessage, ElLoading } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import req from '@/utils/req'
 import Notice from '../notice.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const uploadRef = ref()
 const uploadUrl = '/api/import'
@@ -74,7 +77,7 @@ const selectedFile = ref(null)
 // 文件选择变化处理
 const handleFileChange = (file, fileList) => {
     selectedFile.value = file.raw
-    console.log('文件已选择:', file.name)
+    // console.log('文件已选择:', file.name)
 }
 
 // 清除文件
@@ -86,18 +89,18 @@ const clearFile = () => {
 // 手动上传
 const handleUpload = () => {
     if (!selectedFile.value) {
-        ElMessage.warning('请先选择要导入的文件')
+        ElMessage.warning(t('migration.warning'))
         return
     }
     
-    console.log('开始上传文件:', selectedFile.value.name)
+    // console.log('开始上传文件:', selectedFile.value.name)
     
     const formData = new FormData()
     formData.append('file', selectedFile.value)
     
     const loading = ElLoading.service({
         lock: true,
-        text: '正在导入数据，请稍候...',
+        text: t('migration.loading'),
         background: 'rgba(0, 0, 0, 0.7)'
     })
 
@@ -108,15 +111,15 @@ const handleUpload = () => {
     })
     .then(res => {
         if (res.data.code === 200) {
-            ElMessage.success(res.data.msg || '导入成功!')
+            ElMessage.success(res.data.msg || t('migration.success'))
             clearFile()
         } else {
-            ElMessage.error(res.data.msg || '导入失败!')
+            ElMessage.error(res.data.msg || t('migration.fail'))
         }
     })
     .catch(error => {
-        console.error('上传错误:', error)
-        ElMessage.error('文件上传失败，请检查网络连接!')
+        // console.error('上传错误:', error)
+        ElMessage.error(t('migration.upload.error'))
     })
     .finally(() => {
         loading.close()
@@ -129,11 +132,11 @@ const beforeUpload = (file) => {
     const isLt10M = file.size / 1024 / 1024 < 10
 
     if (!isJson) {
-        ElMessage.error('只支持 JSON 格式文件!')
+        ElMessage.error(t('migration.only.json'))
         return false
     }
     if (!isLt10M) {
-        ElMessage.error('文件大小不能超过 10MB!')
+        ElMessage.error(t('migration.max.size'))
         return false
     }
 
@@ -143,16 +146,16 @@ const beforeUpload = (file) => {
 // 上传成功处理（备用）
 const handleSuccess = (response, file) => {
     if (response.code === 200) {
-        ElMessage.success(response.msg || '导入成功!')
+        ElMessage.success(response.msg || t('migration.success'))
     } else {
-        ElMessage.error(response.msg || '导入失败!')
+        ElMessage.error(response.msg || t('migration.fail'))
     }
 }
 
 // 上传失败处理（备用）
 const handleError = (error, file) => {
-    console.error('上传错误:', error)
-    ElMessage.error('文件上传失败，请检查网络连接!')
+    // console.error('上传错误:', error)
+    ElMessage.error(t('migration.upload.error'))
 }
 </script>
 

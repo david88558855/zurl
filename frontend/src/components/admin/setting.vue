@@ -1,7 +1,7 @@
 <template>
     <div class="setting">
         <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
-            <el-tab-pane label="站点设置" name="wp">
+            <el-tab-pane :label="$t('site.settings')" name="wp">
                 <!-- <Notice>
                     <ul>
                         <li>如果您将WP2AI和WordPress安装在同一服务器，并使用HOST网络，数据库地址一般为 <code>localhost</code> 或 <code>127.0.0.1</code> </li>
@@ -11,25 +11,25 @@
                     </ul>
                 </Notice> -->
                 <el-form style="margin-top:1em;" ref="siteRuleRef" :rules="rules" :model="siteForm" label-position="top">
-                    <el-form-item label="网站名称" prop="title">
-                        <el-input placeholder="请填写网站名称" v-model="siteForm.title"></el-input>
+                    <el-form-item :label="$t('title')" prop="title">
+                        <el-input :placeholder="$t('setting.title.placeholder')" v-model="siteForm.title"></el-input>
                     </el-form-item>
-                    <el-form-item label="网站关键词" prop="keywords">
-                        <el-input placeholder="请填写网站关键词，多个关键词使用英文,分隔" v-model="siteForm.keywords"></el-input>
+                    <el-form-item :label="$t('keywords')" prop="keywords">
+                        <el-input :placeholder="$t('setting.keywords.placeholder')" v-model="siteForm.keywords"></el-input>
                     </el-form-item>
-                    <el-form-item label="网站描述" prop="description">
-                        <el-input  type="textarea" placeholder="请填写完整描述" v-model="siteForm.description"></el-input>
+                    <el-form-item :label="$t('description')" prop="description">
+                        <el-input  type="textarea" :placeholder="$t('setting.description.placeholder')" v-model="siteForm.description"></el-input>
                     </el-form-item>
-                    <el-form-item label="自定义Header" prop="header">
-                        <el-input type="textarea" placeholder="若不清楚，请勿填写" v-model="siteForm.header"></el-input>
+                    <el-form-item :label="$t('custom.header')" prop="header">
+                        <el-input type="textarea" :placeholder="$t('setting.header.placeholder')" v-model="siteForm.header"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="自定义Footer" prop="footer">
-                        <el-input type="textarea" placeholder="支持HTML内容" v-model="siteForm.footer"></el-input>
+                    <el-form-item :label="$t('custom.footer')" prop="footer">
+                        <el-input type="textarea" :placeholder="$t('setting.footer.placeholder')" v-model="siteForm.footer"></el-input>
                     </el-form-item>
 
                     <el-form-item>
-                        <el-button @click="setSite" type="primary">保存</el-button>
+                        <el-button @click="setSite" type="primary">{{ $t('save') }}</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -42,7 +42,9 @@
 import {ref,onMounted,reactive} from 'vue'
 import req, { toForm } from '@/utils/req';
 import { useSiteStore } from '@/stores/site';
-import Notice from '../notice.vue';
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const siteStore = useSiteStore()
 const activeName = ref('wp')
@@ -61,29 +63,9 @@ const siteForm = ref({
 // 校验规则
 const rules = reactive({
     "title": [
-        { required: true, message: '请输入网站名称', trigger: 'blur' },
-        { min: 3, max: 32, message: '长度不正确', trigger: 'blur' },
-    ],
-    "wordpress.db_username": [
-        { required: true, message: '请输入数据库用户名', trigger: 'blur' },
-        // 只能是字母、数字、下划线或中横线
-        { pattern: /^[a-zA-Z0-9_-]+$/, message: '只能是字母、数字、下划线或中横线', trigger: 'blur' },
-    ],
-    "wordpress.db_password": [
-        { required: true, message: '请输入数据库密码', trigger: 'blur' },
-        // 只能是字母、数字、下划线或中横线
-        { pattern: /^[a-zA-Z0-9!@#$%^&\*()_-]+$/, message: '密码不符合要求', trigger: 'blur' },
-    ],
-    "wordpress.db_name": [
-        { required: true, message: '请输入数据库名称', trigger: 'blur' },
-        // 只能是字母、数字、下划线或中横线
-        { pattern: /^[a-zA-Z0-9_-]+$/, message: '名称不符合规范', trigger: 'blur' },
-    ],
-    "wordpress.domain":[
-        { required: true, message: '请输入网站域名', trigger: 'blur' },
-        { pattern: /^(http:\/\/|https:\/\/)[a-zA-Z0-9.\-_]+[a-zA-Z0-9.\-_]*[^/]$/, message: '域名不符合规范', trigger: 'blur' },
-    ],
-  
+        { required: true, message: t('setting.rules.title.required'), trigger: 'blur' },
+        { min: 3, max: 32, message: t('setting.rules.length'), trigger: 'blur' },
+    ]
 });
 
 
@@ -114,7 +96,7 @@ const setSite = ()=>{
                 if( res.data.code == 200 ) {
                     // siteStore.wp_domain = formData.value['wordpress.domain']
                     // 提示成功
-                    ElMessage.success("配置已保存")
+                    ElMessage.success(t('setting.update.success'))
                     // 清空缓存
                     // siteStore.app_info = {}
                     // sessionStorage.removeItem("app_info")
@@ -126,7 +108,7 @@ const setSite = ()=>{
             })
             .catch(err=>{
                 // 提示错误
-                ElMessage.error("发生错误")
+                ElMessage.error(t('setting.fail'))
             })
         } else {
             return false;

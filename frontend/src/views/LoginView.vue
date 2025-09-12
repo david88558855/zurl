@@ -1,26 +1,26 @@
 <template>
     <div class="login">
       <div class="loginForm">
-        <h2 class="login-title">管理员登录</h2>
+        <h2 class="login-title">{{ $t('admin.login') }}</h2>
         <div class="form-content">
           <div class="input-group">
-            <label class="input-label">用户名</label>
+            <label class="input-label">{{ $t('username') }}</label>
             <el-input 
               class="login-input" 
               type="text" 
-              placeholder="请输入用户名" 
+              :placeholder="$t('login.username.placeholder')" 
               v-model="userForm.username"
               size="large"
             />
           </div>
           <div class="input-group">
-            <label class="input-label">密码</label>
+            <label class="input-label">{{ $t('password') }}</label>
             <el-input 
               @keyup.enter="login" 
               show-password 
               class="login-input" 
               type="password" 
-              placeholder="输入登录密码"
+              :placeholder="$t('login.password.placeholder')"
               v-model="userForm.password"
               size="large"
             />
@@ -39,7 +39,7 @@
               type="primary"
               size="large"
             >
-              登录
+              {{ $t('login') }}
             </el-button>
           </div>
         </div>
@@ -52,7 +52,9 @@ import {ref,onMounted} from 'vue'
 import req,{toForm} from '@/utils/req';
 import { useRouter } from 'vue-router';
 import { useSiteStore } from '@/stores/site';
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const siteStore = useSiteStore()
 
 const userForm = ref({
@@ -72,7 +74,7 @@ const login = ()=>{
             siteStore.is_login = true;
             // 临时写入邮箱
             // 提示成功
-            ElMessage.success("登录成功")
+            ElMessage.success(t('login.success'))
             // 1.5s后跳转
             setTimeout(()=>{
                 router.push("/")
@@ -80,13 +82,13 @@ const login = ()=>{
         }
         else {
             // 登录失败
-            ElMessage.error(res.data.msg)
+            ElMessage.error(t(res.data.msg))
         }
     })
     .catch(err=>{
         console.log(err)
         // 提示错误
-        ElMessage.error("发生错误")
+        ElMessage.error(t('error.occurred'))
     })
 }
 </script>

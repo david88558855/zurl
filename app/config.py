@@ -59,7 +59,7 @@ async def get_redis():
 # 初始化操作
 def init():
     global config
-    print("正在初始化配置...")
+    print("Initializing configuration...")
     # print(f"配置文件路径: {DB_FILE_PATH}")
     # 检查data/config.toml文件是否存在，如果不存在，则复制站点下的config.simple.toml
     if not os.path.exists(CONFIG_PATH):
@@ -69,9 +69,9 @@ def init():
                 config = toml.load(f)
             save_config()
         else:
-            raise FileNotFoundError("config.simple.toml 配置文件不存在！")
+            raise FileNotFoundError("The config.simple.toml configuration file does not exist!")
         
         
-    print("配置初始化完成。")
+    print("Initialization complete.")
 
 

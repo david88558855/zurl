@@ -2,31 +2,31 @@
     <div class="posts">
         <Notice>
             <ul>
-                <li>为了提高性能，点击次数将被Redis缓存，每隔10分钟更新一次！</li>
-                <li>支持短链接/长链接/标题进行搜索查找</li>
-                <li>清空数据会删除所有链接信息，无法恢复，请谨慎操作！</li>
+                <li>{{ $t('list.notice1') }}</li>
+                <li>{{ $t('list.notice2') }}</li>
+                <li>{{ $t('list.notice3') }}</li>
             </ul>
         </Notice>
         <!-- 按钮部分 -->
         <div class="btns">
-            <el-button type="primary" @click="addLink">添加链接</el-button>
+            <el-button type="primary" @click="addLink">{{ $t('add.link') }}</el-button>
             <!-- <el-button type="danger" @click="confirmCleanData">清空数据</el-button> -->
-            <el-button type="danger" @click="delSelectedRows">删除选中</el-button>
+            <el-button type="danger" @click="delSelectedRows">{{ $t('delete.selected') }}</el-button>
 
             <div class="search">
                 <el-input
                     v-model="search.keyword"
                     style="max-width: 600px"
-                    placeholder="支持短链接/长链接/标题查询"
+                    :placeholder="$t('list.search.placeholder')"
                     class="input-with-select"
                     clearable
                     @clear="clearSearch"
                 >
                 <template #prepend>
-                    <el-select v-model="search.filter" placeholder="查询条件" style="width: 120px">
-                        <el-option label="短链接" value="short_url" />
-                        <el-option label="长链接" value="long_url" />
-                        <el-option label="模糊标题" value="title" />
+                    <el-select v-model="search.filter" :placeholder="$t('list.search.filter.placeholder')" style="width: 120px">
+                        <el-option :label="$t('short.url')" value="short_url" />
+                        <el-option :label="$t('long.url')" value="long_url" />
+                        <el-option :label="$t('list.search.blurry.title')" value="title" />
                     </el-select>
                 </template>
                 <template #append>
@@ -46,14 +46,14 @@
                 </template>
             </el-table-column> -->
             <el-table-column type="selection" width="40" />
-            <el-table-column prop="short_url" label="短链接" width="100">
+            <el-table-column prop="short_url" :label="$t('short.url')" width="100">
                 <template #default="{row}">
-                    <span title="点击复制" @click="copyShortUrl(row.short_url)" class="short-url">
+                    <span :title="$t('click.copy')" @click="copyShortUrl(row.short_url)" class="short-url">
                         <span>{{row.short_url}}</span>
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="long_url" label="长链接"  width="260">
+            <el-table-column prop="long_url" :label="$t('long.url')"  width="260">
                 <template #default="{row}">
                     <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">
                         <el-link type="info" target="_blank" :href="row.long_url">{{row.long_url}}</el-link>
@@ -61,38 +61,38 @@
                 </template>
             </el-table-column>
 
-            <el-table-column prop="title" label="标题"  width="350">
+            <el-table-column prop="title" :label="$t('title')"  width="350">
                 <template #default="{row}">
                     <span style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{row.title}}</span>
                 </template>
             </el-table-column>
 
             <!-- 点击次数 -->
-            <el-table-column sortable prop="clicks" label="点击次数"  width="110">
+            <el-table-column sortable prop="clicks" :label="$t('clicks')"  width="110">
                 <template #default="{row}">
                     <span>{{row.clicks}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column sortable prop="updated_at" label="最后修改"  width="150">
+            <el-table-column sortable prop="updated_at" :label="$t('updated_at')"  width="150">
                 <template #default="{row}">
                     <span>{{siteStore.formatDateTime(row.updated_at)}}</span>
                 </template>
             </el-table-column>
 
-            <el-table-column sortable prop="expires_at" label="过期时间"  width="150">
+            <el-table-column sortable prop="expires_at" :label="$t('expires_at')"  width="150">
                 <template #default="{row}">
                     <span>{{siteStore.formatDateTime(row.expires_at)}}</span>
                 </template>
             </el-table-column>
            
-            <el-table-column fixed="right" label="操作" min-width="90">
+            <el-table-column fixed="right" :label="$t('actions')" min-width="90">
             <template #default="scope">
-                <el-button title="编辑" @click="editLink(scope.row)" size="large" link type="primary" :icon="Edit"></el-button>
+                <el-button :title="$t('edit')" @click="editLink(scope.row)" size="large" link type="primary" :icon="Edit"></el-button>
 
-                <el-popconfirm @confirm="deletePost(scope)" title="确认删除？">
+                <el-popconfirm @confirm="deletePost(scope)" :title="$t('confirm.delete')" >
                     <template #reference>
-                        <el-button title="删除" size="large" link type="danger" :icon="Delete" />
+                        <el-button :title="$t('delete')" size="large" link type="danger" :icon="Delete" />
                         <!-- <el-button link type="danger" size="small">删除</el-button> -->
                     </template>
                     
@@ -134,6 +134,9 @@ import { useBaseStore } from '@/stores/base';
 import { ElMessage } from 'element-plus';
 import Notice from '../notice.vue';
 import Add from '@/components/admin/add.vue';
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 const tableKey = ref(0)
 import {
     Delete,
@@ -163,7 +166,7 @@ const copyShortUrl = (shortUrl) => {
 }
 
 // 弹出框标题
-const addLinkTitle = ref("添加链接")
+const addLinkTitle = ref(t('add.link'))
 const addLinkType = ref("add") // 添加链接类型，默认为添加
 
 // 清空搜索，然后重新获取链接
@@ -180,7 +183,7 @@ const delSelectedRows = ()=>{
     const selectedRows = tableRef.value.getSelectionRows()
     // 如果长度是0
     if( selectedRows.length === 0 ) {
-        ElMessage.warning("请先选择要删除的链接！")
+        ElMessage.warning(t('please.select.delete.links'))
         return
     }
     // 筛选出里面的id
@@ -189,22 +192,22 @@ const delSelectedRows = ()=>{
         ids: ids
     }
     // 弹出二次确认
-    ElMessageBox.confirm('此操作将删除选中链接, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+    ElMessageBox.confirm(t('delete.confirm.msg'), t('tips'), {
+        confirmButtonText: t('confirm'),
+        cancelButtonText: t('cancel'),
         type: 'warning'
     }).then(() => {
         req.post("/api/delete/urls", datas)
         .then(res=>{
             if( res.data.code == 200 ) {
-                ElMessage.success(res.data.msg)
+                ElMessage.success(t(res.data.msg))
                 // 重新获取文章列表
                 getPosts()
             }
         })
         .catch(err=>{
             console.log(err)
-            ElMessage.error("删除失败！")
+            ElMessage.error(t("delete.failed"))
         })
     }).catch((err) => {
         // 用户取消
@@ -214,7 +217,7 @@ const delSelectedRows = ()=>{
 // 关闭弹窗
 const handleFinish = ()=>{
     addLinkVisible.value = false
-    addLinkTitle.value = "添加链接"
+    addLinkTitle.value = t('add.link')
     linkInfo.value = {
         long_url: '',
         short_url: '',
@@ -227,7 +230,7 @@ const handleFinish = ()=>{
 
 const handleClose = ()=>{
     addLinkVisible.value = false
-    addLinkTitle.value = "添加链接"
+    addLinkTitle.value = t('add.link')
     linkInfo.value = {
         long_url: '',
         short_url: '',
@@ -256,7 +259,7 @@ const pageInfo = ref({
 // 添加链接
 const addLink = ()=>{
     addLinkVisible.value = true
-    addLinkTitle.value = "添加链接"
+    addLinkTitle.value = t('add.link')
     addLinkType.value = "add"
     linkInfo.value = {
         long_url: '',
@@ -269,17 +272,18 @@ const addLink = ()=>{
 
 // 编辑链接
 const editLink = (row)=>{
+    console.log(row)
     linkInfo.value = row;
     addLinkVisible.value = true;
-    addLinkTitle.value = "编辑链接"
     addLinkType.value = "edit"
+    addLinkTitle.value = t('edit.link1')
 }
 
 // 查询链接
 const searchKeyword = ()=>{
     // 如果没有输入内容，则不查询
     if( search.value.keyword.trim() === '' ){
-        ElMessage.warning("请输入查询内容")
+        ElMessage.warning(t("please.enter.query.content"))
         return
     }
     
@@ -301,12 +305,12 @@ const searchKeyword = ()=>{
             tableKey.value++
         }
         else {
-            ElMessage.error(res.data.msg)
+            ElMessage.error(t(res.data.msg))
         }
     })
     .catch(err=>{
         console.log(err)
-        ElMessage.error("查询失败")
+        ElMessage.error(t("query.failed"))
     })
 }
 
@@ -318,16 +322,16 @@ const deletePost = (index)=>{
     req.post(url,toForm({short_url:short_url}))
     .then(res=>{
         if(res.data.code == 200){
-            ElMessage.success(res.data.msg)
+            ElMessage.success(t(res.data.msg))
             urlsData.value.splice(index.$index, 1)
         }
         else{
-            ElMessage.error(res.data.msg)
+            ElMessage.error(t(res.data.msg))
         }
     })
     .catch(err=>{
         console.log(err)
-        ElMessage.error("删除失败！")
+        ElMessage.error(t("delete.failed"))
     })
 }
 
@@ -366,13 +370,13 @@ const confirmCleanData = ()=>{
         .then(res=>{
             if( res.data.code == 200 ) {
                 // 提示成功
-                ElMessage.success(res.data.msg)
+                ElMessage.success(t(res.data.msg))
                 // 重新获取文章列表
                 getPosts()
             }
             else {
                 // 提示失败
-                ElMessage.error(res.data.msg)
+                ElMessage.error(t(res.data.msg))
             }
         })
     }).catch((err) => {
@@ -382,34 +386,6 @@ const confirmCleanData = ()=>{
     });
 }
 
-// 添加文章ID
-const addPost = ()=>{
-    ElMessageBox.prompt('请输入WordPress文章ID', '提示', {
-        confirmButtonText: '添加',
-        cancelButtonText: '取消',
-        inputPattern:
-        /^[0-9]+/,
-        inputErrorMessage: '只能是数字',
-    })
-    .then(({ value }) => {
-      req.post("/api/add/post",toForm({id:value}))
-      .then(res=>{
-        if(res.data.code == 200){
-            ElMessage.success(res.data.msg)
-            getPosts()
-        }
-        else{
-            ElMessage.error(res.data.msg)
-        }
-      })
-      .catch(err=>{
-        console.log(err)
-      })
-    })
-    .catch(() => {
-      // 用户取消
-    })
-}
 
 onMounted(()=>{
     getPosts()
