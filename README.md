@@ -5,9 +5,9 @@
 
 Zurl is a simple and practical short URL system that can quickly generate short links for easy sharing and management. Zurl aims to provide a lightweight solution to help users better manage and track links.
 
-![970c82f82f62fe5c.png](https://img.rss.ink/imgs/2025/08/04/970c82f82f62fe5c.png)
+![](https://v.uuu.ovh/imgs/2025/09/12/cf868390221fcfcb.png)
 
-![c57c3cce4618acd3.png](https://img.rss.ink/imgs/2025/08/04/c57c3cce4618acd3.png)
+![](https://v.uuu.ovh/imgs/2025/09/12/a7f605b1c7419bf4.png)
 
 ## Features
 

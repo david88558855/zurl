@@ -163,4 +163,10 @@ export default {
     'user.confirm.password':'确认密码',
     'user.confirm.new.password':'请确认新密码',
     'copy.success':'复制成功',
+    'long.url.required':'请输入长链接',
+    'long.url.invalid':'请输入有效的URL',
+    'link.add.success':'链接添加成功',
+    'link.add.fail':'链接添加失败',
+    'link.add.error':'添加链接时发生错误',
+    'link.update.success':'链接更新成功',
 }

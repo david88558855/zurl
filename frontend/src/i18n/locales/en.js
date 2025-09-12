@@ -164,4 +164,10 @@ export default {
   'user.confirm.password': 'Confirm Password',
   'user.confirm.new.password': 'Please confirm new password',
   'copy.success':'Copy successful',
+  'long.url.required': 'Please enter long URL',
+  'long.url.invalid': 'Please enter a valid URL',
+  'link.add.success': 'Link added successfully',
+  'link.add.fail': 'Failed to add link',
+  'link.add.error': 'Error occurred while adding link',
+  'link.update.success': 'Link updated successfully',
 }

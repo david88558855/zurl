@@ -41,6 +41,9 @@
 import { ref,onMounted } from 'vue'
 import req, { toForm } from '@/utils/req'
 import { ElMessage } from 'element-plus'
+import { useI18n } from 'vue-i18n'
+
+const { t, locale } = useI18n()
 
 const props = defineProps(['url', 'utype'])
 
@@ -56,8 +59,8 @@ const formData = ref({
 })
 const rules = {
     long_url: [
-        { required: true, message: '长链接不能为空', trigger: 'blur' },
-        { type: 'url', message: '请输入有效的URL', trigger: 'blur' }
+        { required: true, message: t('long.url.required'), trigger: 'blur' },
+        { type: 'url', message: t('long.url.invalid'), trigger: 'blur' }
     ]}
 
 // 添加链接函数
@@ -67,21 +70,21 @@ const addLink = () => {
             req.post("/api/shorten_url", formData.value)
             .then(res => {
                 if (res.data.code === 200) {
-                    ElMessage.success("链接添加成功")
+                    ElMessage.success(t('link.add.success'))
                     // 触发 finish 事件，关闭弹窗
                     emit('finish')
                     // 重置表单
                     resetForm()
                 } else {        
-                    ElMessage.error(res.data.msg || "添加链接失败")
+                    ElMessage.error(t(res.data.msg) || "Failed to add link")
                 }
             })
             .catch(err => {
                 console.error(err)
-                ElMessage.error("添加链接时发生错误")
+                ElMessage.error(t('link.add.error'))
             })
         } else {
-            ElMessage.error("请填写正确的链接信息")
+            ElMessage.error(t('home.long_url.url'))
             formRef.value.clearValidate()
             formData.value = {
                 long_url: '',
@@ -105,16 +108,16 @@ const updateLink = () => {
             req.post("/api/update_url/" + formData.value.id, dataToUpdate)
             .then(res => {
                 if (res.data.code === 200) {
-                    ElMessage.success("链接更新成功")
+                    ElMessage.success(t('link.update.success'))
                     emit('finish') // 触发 finish 事件，关闭弹窗
                     // 重置表单
                     resetForm()
                 } else {
-                    ElMessage.error(res.data.msg || "更新链接失败")
+                    ElMessage.error(t(res.data.msg))
                 }
             })
         } else {
-            ElMessage.error("请填写正确的链接信息")
+            ElMessage.error(t('home.long_url.url'))
             formRef.value.clearValidate()
             formData.value = {
                 long_url: '',
